@@ -16,13 +16,13 @@ public class PlayerBehavior : MonoBehaviour
 
     //public GameObject follower;
     public float speedMuliplier;
-    public GameBehavior gameManager;
 
     private float vInput;
     private float hInput;
 
     private Rigidbody _rb;
     private CapsuleCollider _col;
+    private GameBehavior _gameManager;
 
     private bool doJump = false;
     private bool doShoot = false;
@@ -31,7 +31,7 @@ public class PlayerBehavior : MonoBehaviour
     {
         _rb = GetComponent<Rigidbody>();
         _col = GetComponent<CapsuleCollider>();
-        gameManager = GameObject.Find("GameManager").GetComponent<GameBehavior>();
+        _gameManager = GameObject.Find("GameManager").GetComponent<GameBehavior>();
     }
 
     void Update()
@@ -39,7 +39,7 @@ public class PlayerBehavior : MonoBehaviour
         vInput = Input.GetAxis("Vertical") * moveSpeed;
         hInput = Input.GetAxis("Horizontal") * rotateSpeed;
 
-        if(IsGrounded() && Input.GetKeyDown(KeyCode.Space))
+        if (IsGrounded() && Input.GetKeyDown(KeyCode.Space))
         {
             doJump = true;
         }
@@ -52,7 +52,7 @@ public class PlayerBehavior : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if(doJump)
+        if (doJump)
         {
             _rb.AddForce(Vector3.up * jumpVelocity, ForceMode.Impulse);
             doJump = false;
@@ -88,7 +88,14 @@ public class PlayerBehavior : MonoBehaviour
         // Each follwer givers the player one hit of invisibily and follower the player around
         follower.SetActive(true);
     } */
-    
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.name == "Enemy")
+        {
+            _gameManager.HP -= 1;
+        }
+    }
 
     public void BoostSpeed(float multipler, float seconds)
     {
@@ -101,6 +108,6 @@ public class PlayerBehavior : MonoBehaviour
     {
         Debug.Log("Speed boost as ended.");
         moveSpeed /= speedMuliplier;
-        gameManager.speedLable = false;
+        _gameManager.speedLable = false;
     }
 }

@@ -9,6 +9,7 @@ public class GameBehavior : MonoBehaviour
     public int maxItems = 4;
 
     public bool showWinScreen = false;
+    public bool showLossScreen = false;
     public bool followerText = false;
     public bool speedLable = false;
 
@@ -28,7 +29,7 @@ public class GameBehavior : MonoBehaviour
         set
         {
             _itemsCollected = value;
-            if(_itemsCollected >= maxItems)
+            if (_itemsCollected >= maxItems)
             {
                 labelText = "You've found all the items!";
                 showWinScreen = true;
@@ -64,6 +65,16 @@ public class GameBehavior : MonoBehaviour
         {
             _playerHP = value;
             Debug.LogFormat("Lives: {0}", _playerHP);
+            if (_playerHP <= 0)
+            {
+                labelText = "You want another life with that?";
+                showLossScreen = true;
+                Time.timeScale = 0;
+            }
+            else
+            {
+                labelText = "Ouch... that's got to hurt.";
+            }
         }
     }
 
@@ -76,11 +87,17 @@ public class GameBehavior : MonoBehaviour
         set
         {
             _speedBoostCount = value;
-            if(_speedBoostCount > 0)
+            if (_speedBoostCount > 0)
             {
                 speedLable = true;
             }
         }
+    }
+
+    void RestartLevel()
+    {
+        SceneManager.LoadScene(0);
+        Time.timeScale = 1.0f;
     }
 
     void OnGUI()
@@ -89,19 +106,28 @@ public class GameBehavior : MonoBehaviour
         GUI.Box(new Rect(20, 50, 150, 25), "Items Collected: " + _itemsCollected);
         GUI.Label(new Rect(Screen.width / 2 - 100, Screen.height - 50, 300, 50), labelText);
 
-        if(showWinScreen)
+        if (showWinScreen)
         {
             if (GUI.Button(new Rect(Screen.width / 2 - 100, Screen.height / 2 - 50, 200, 100), "YOU WON!"))
             {
-                SceneManager.LoadScene(0);
-                Time.timeScale = 1.0f;
+                RestartLevel();
             }
         }
-        if(followerText)
+
+        if (showLossScreen)
+        {
+            if (GUI.Button(new Rect(Screen.width / 2 - 100, Screen.height / 2 - 50, 200, 100), "You lose..."))
+            {
+                RestartLevel();
+            }
+        }
+
+        if (followerText)
         {
             GUI.Box(new Rect(Screen.width - 170, 20, 150, 25), "You have " + _followerCount + " followers!");
         }
-        if(speedLable)
+
+        if (speedLable)
         {
             GUI.Label(new Rect(Screen.width /2 - 100, 20, 150, 25), speedText);
         }
